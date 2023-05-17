@@ -21,6 +21,7 @@ WHERE numeric_col = .7;
 -- import data
 SELECT * FROM us_counties_pop_est_2019; 
 
+
 /*
 "Pracitcal SQL" by Anthony DeBarros, 2nd edition, Chapter 6
 Exercise 2:
@@ -53,6 +54,7 @@ CREATE TABLE us_counties_pop_est_2010 (
     estimates_base_2010 INTEGER,             -- 4/1/2010 resident total population estimates base
     CONSTRAINT counties_2010_key PRIMARY KEY (state_fips, county_fips));
 
+
 COPY us_counties_pop_est_2010
 FROM '/home/monika/Public/us_counties_pop_est_2010.csv'
 WITH (FORMAT CSV, HEADER);
@@ -70,7 +72,8 @@ ON c2019.state_fips = c2010.state_fips
     AND c2019.county_fips = c2010.county_fips                           -- specify expressions used for the join. both must apply!
 ORDER BY pct_change DESC;                                               -- oder DESC to show greatest percentage increase
 
-/* Exercise Chapter 4
+
+/* Exercise 7.1
 According to census population estimates, which county had
 the greatest percentage loss of population between 2010 and
 2019? Why?*/
@@ -87,3 +90,27 @@ FROM us_counties_pop_est_2019 AS c2019                                  -- defin
 ON c2019.state_fips = c2010.state_fips                                  
     AND c2019.county_fips = c2010.county_fips                           -- specify expressions used for the join. both must apply!
 ORDER BY pct_change;                                                    -- change order to ASC to sho greatest percentage loss
+
+
+/* Exercise 7.2
+Merge the queries of the census county population estimates for 2010 and 2019.
+Your results should include a column called "year" that specifies
+the year of the estimate for each row in the results */
+
+SELECT
+ '2019' AS YEAR,
+ state_name,
+ county_name,
+ pop_est_2019 pop
+ FROM
+  us_counties_pop_est_2019
+
+    UNION
+SELECT 
+ '2010' AS YEAR,
+ state_name,
+ county_name,
+ estimates_base_2010 pop
+ FROM
+  us_counties_pop_est_2010
+  ORDER BY pop DESC;
